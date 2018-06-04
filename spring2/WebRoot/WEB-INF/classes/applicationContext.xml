@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
+	
+	<!-- <bean id="person1" class="beans.Person">
+		<property name="name" value="张三"></property>
+		<property name="age" value="20"></property>
+	</bean> -->
+
+	<!-- 用来自动生成所有被Aspect标注修饰的类生成代理对象 -->
+	<!-- <aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+	<context:component-scan base-package="springaop"></context:component-scan> -->
+	<!-- 目标对象（被代理实例）在之前的注释中通过@Component来完成 -->
+	
+	<!-- 
+		基于xml形式配置aop:
+		1、习惯性利用注释的方式来进行aop的配置，aop框架兼容注解的，注解的方法有重用性
+		2、如何配置
+			2.1导入aop命名空间<aop:config>
+			2.2通过bean标签来完成目标对象以及切面实例的配置
+			2.3<aop:config>
+			<aop:pointcut expression="切点表达式" id="ip"/>
+			   		<aop:aspect id="" ref="引用的类的实例">
+			   			<aop:before method="方法名称" pointcut-ref="引用重用的切入点" pointcut="具体的切入点"/> 
+			   		</aop:aspect>
+			   </aop:config>
+	 -->
+	
+	
+	<bean id="computerimpl" class="springaopxml.Computer2"></bean>
+	<!-- 创建一个切面类实例 -->
+	<bean id="computeraspect" class="springaopxml.ComputerAspect"></bean>
+	<aop:config>
+		<aop:pointcut expression="execution(public int springaopxml.Computer2.*(..))" id="ip"/>
+		<!-- 对config里面所有的切面起作用，若放在aspect里面，只对某一个切面起作用 -->
+		<aop:aspect id="aspect" ref="computeraspect" order="0">
+			<!-- 切面内部的通知如何来声明，类似@Before的通知如何声明 -->
+			<aop:before method="a" pointcut-ref="ip"/> 
+			<aop:after method="b" pointcut="execution(public int springaopxml.Computer2.*(..))"/> 
+			
+		</aop:aspect>
+	</aop:config>
+</beans>
