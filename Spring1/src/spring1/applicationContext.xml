@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd">
+
+<!-- byType:通过类型进行自动装配，缺点：如果IOC容器中同时存在多个同类型的bean时，会出现异常 
+	byName:bean的属性名称必须和被引用的bean的id保持一致
+	autowire要么根据名称，要么根据类型，
+-->
+<bean id="car1" class="spring1.Car" p:type="劳斯莱斯"></bean>
+<bean id="car2" class="spring1.Car" p:type="法拉利"></bean>
+<bean id="car" class="spring1.Car" p:type="雪佛兰"></bean>
+
+<bean id="person" class="spring1.Person" p:name="张三" autowire="byName"></bean>
+
+<!-- person2继承person1 -->
+<bean id="person1" class="spring1.Person" p:name="李四" p:car-ref="car1" depends-on="car1"></bean>
+<bean id="person2" parent="person1" p:name="王五"></bean>
+
+<!-- 抽象bean -->
+<bean id="abstractPerson" abstract="true" class="spring1.Person" p:name="liujihong" p:car-ref="car2"></bean>
+
+<!-- 引用外部bean
+	1、创建properties，key=value；
+	2、配置文件中通过key去引用properties中的值
+	3、告知IOC属性文件
+ -->
+<context:property-placeholder location="classpath:spring1/person.properties"/>
+<bean id="person3" class="spring1.Person" p:name="${personname}"></bean>
+
+<bean id="person4" class="spring1.Person">
+	<property name="name" value="liujihong"></property>
+	<property name="car" value="#{car1}"></property>
+</bean>
+<bean id="person5" class="spring1.Person">
+<!-- 访问person4的属性和方法 -->
+	<property name="name" value="#{person4.name.toUpperCase()}"></property>
+	<property name="car" value="#{person4.car}"></property>
+</bean>
+
+<!-- 只需要申明即可 -->
+<bean id="TestBeanpostprocessor" class="spring1.TestBeanpostprocessor"></bean>
+
+<bean id="person6" class="spring1.Person" init-method="a" destroy-method="b">
+<!-- 逻辑运算 -->
+	<property name="name" value="#{10+10}"></property>
+	<property name="car" value="#{person4.car}"></property>
+</bean>
+
+</beans>
